@@ -1,9 +1,18 @@
 # text-extractor
-Extracts text from Office and PDFs files, using POI and PDFBox, as a very, very tiny alternative to Tika
+Extracts text from Office and PDFs files, using POI and PDFBox, as a very, very tiny alternative to [Apache Tika](https://tika.apache.org/)
 
-This library, obviously, NO replaces Tika. Only extracts text from Word, Excel, RTF and PDF files. It's based on the code found on https://codezrule.wordpress.com/2010/03/24/extract-text-from-pdf-office-files-doc-ppt-xls-open-office-files-rtf-and-textplain-files-in-java/  but using the last Apache POI and Apache PDFBox versions (04/30/2015).
+This library, obviously, NO replaces Apache Tika. Only extracts text from Word, Excel, RTF and PDF files. It's based on the code found on the blog article [Extract Text From pdf, office files(.doc, .ppt, .xls), open office files, .rtf, and text/plain files in Java](https://codezrule.wordpress.com/2010/03/24/extract-text-from-pdf-office-files-doc-ppt-xls-open-office-files-rtf-and-textplain-files-in-java/)  but using the last Apache POI and Apache PDFBox versions (04/30/2015).
 
 - org.apache.poi, 3.11
 - org.apache.pdfbox, 1.8.9
 
+I guess that I will continue working on this, because I'm interested in learn more about POI.
 
+## Why I created this library?
+
+I wrote a Crawler that need to extract text from Office and PDF files. This crawler was written in Java, but it had to work on a IBM Notes database. For some reason that I still don't know, Tika stops to work. Maybe some library that I changed, maybe some configuration that I moved considering that the crawler uses [jcifs](https://jcifs.samba.org/), [Apache HTTP Components](http://hc.apache.org/), [jsoup](http://jsoup.org/) and my own [framework to connect to IBM Notes](https://github.com/mariosotil/river-framework). Anyway, to not waste time, looking for an alternative to Tika, I found that code in the blog CodezRule, but it was written in 2010. I updated parts of the code using the "extractor" classes from POI and I got a simpler library than Tika, with less JAR files, but able to do what I need. It worked for me, and maybe it will be useful for you.
+
+## ToDo
+
+- Convert it to a Singleton or a static class
+- Add log entries
