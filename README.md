@@ -16,3 +16,4 @@ I wrote a Crawler that need to extract text from Office and PDF files. This craw
 
 - Convert it to a Singleton or a static class
 - Add log entries
+- Continue to make improvements! (but without change the scope :-)  This is just the 0.0.1-SNAPSHOT version ;-)
