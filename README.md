@@ -1,12 +1,10 @@
 # text-extractor
 Extracts text from Office and PDFs files, using POI and PDFBox, as a very, very tiny alternative to [Apache Tika](https://tika.apache.org/)
 
-This library, obviously, NO replaces Apache Tika. Only extracts text from Word, Excel, RTF and PDF files. It's based on the code found on the blog article [Extract Text From pdf, office files(.doc, .ppt, .xls), open office files, .rtf, and text/plain files in Java](https://codezrule.wordpress.com/2010/03/24/extract-text-from-pdf-office-files-doc-ppt-xls-open-office-files-rtf-and-textplain-files-in-java/)  but using the last Apache POI and Apache PDFBox versions (04/30/2015).
+This library, obviously, NO replaces Apache Tika. Only extracts text from Word, Excel, RTF and PDF files. It's based on the code found on the blog article [Extract Text From pdf, office files(.doc, .ppt, .xls), open office files, .rtf, and text/plain files in Java](https://codezrule.wordpress.com/2010/03/24/extract-text-from-pdf-office-files-doc-ppt-xls-open-office-files-rtf-and-textplain-files-in-java/)  but using the last Apache POI and PDFxStream versions (06/10/2015).
 
-- org.apache.poi, 3.11
-- org.apache.pdfbox, 1.8.9
-
-I guess that I will continue working on this, because I'm interested in learning more about POI.
+- org.apache.poi, 3.12
+- com.snowtide.pdfxstream, 3.1.2
 
 ## Why I created this library?
 
@@ -16,4 +14,4 @@ I wrote a Crawler that extracts text from Office and PDF files. This crawler was
 
 - Convert it to a Singleton or a static class
 - Add log entries
-- Continue to make improvements! (but without change the scope :-)  This is just the 0.0.1-SNAPSHOT version ;-)
+- Continue to make improvements! (but without change the scope :-)  This is just the 0.0.1 version ;-)
