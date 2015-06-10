@@ -14,4 +14,4 @@ I wrote a Crawler that extracts text from Office and PDF files. This crawler was
 
 - Convert it to a Singleton or a static class
 - Add log entries
-- Continue to make improvements! (but without change the scope :-)  
+- Continue to make improvements! but without change the scope. We don't need to reinvent Tika :-)  
