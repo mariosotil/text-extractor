@@ -1,25 +1,28 @@
-package org.riverframework.util;
+package org.riverframework.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.rtf.RTFEditorKit;
 
-import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xssf.extractor.XSSFExcelExtractor;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.extractor.ExcelExtractor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hwpf.extractor.WordExtractor;
 import org.apache.poi.poifs.eventfilesystem.POIFSReaderEvent;
 import org.apache.poi.poifs.eventfilesystem.POIFSReaderListener;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.util.LittleEndian;
-import org.apache.pdfbox.cos.COSDocument;
-import org.apache.pdfbox.pdfparser.PDFParser;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.poi.xssf.extractor.XSSFExcelExtractor;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+
+import com.snowtide.PDF;
+import com.snowtide.pdf.Document;
+import com.snowtide.pdf.OutputTarget;
 
 /**
  * Extracts text only from Word, Excel, RTF and PDF files. It's based on the code
@@ -29,46 +32,25 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class TextExtractor {
-	private static Logger log = LoggerFactory.getLogger(TextExtractor.class);
+	private static Logger log = Logger.getLogger(TextExtractor.class.getName());
 
 	private StringBuffer sb = new StringBuffer(8192);
-	
+
+	public enum Type { PDF, XLSX, XLS, DOC, DOCX, RTF }
+
 	public String pdftotext(InputStream is) {
-		PDFParser parser;
-		String parsedText;
-		PDFTextStripper pdfStripper;
-		PDDocument pdDoc = null;
-		COSDocument cosDoc = null;
+		StringBuilder parsedText = new StringBuilder(1024);
+		
 		try {
-			parser = new PDFParser(is);
+			Document pdf = PDF.open(is, "");
+			pdf.pipe(new OutputTarget(parsedText));
+			pdf.close();
 		} catch (Exception e) {
-			log.error("Unable to open PDF Parser.", e);
-			return null;
+			log.log(Level.WARNING, "Exception occured in parsing the PDF Document.", e);
 		}
-		try {
-			parser.parse();
-			cosDoc = parser.getDocument();
-			pdfStripper = new PDFTextStripper();
-			pdDoc = new PDDocument(cosDoc);
-			parsedText = pdfStripper.getText(pdDoc);
-			cosDoc.close();
-			pdDoc.close();
-		} catch (Exception e) {
-			log.error("Exception occured in parsing the PDF Document.", e);
-			try {
-				if (cosDoc != null) {
-					cosDoc.close();
-				}
-				if (pdDoc != null) {
-					pdDoc.close();
-				}
-			} catch (Exception e1) {
-				log.error("", e1);
-			}
-			return null;
-		}
+
 		log.info("Done");
-		return parsedText;
+		return parsedText.toString();
 	}
 
 	class MyPOIFSReaderListener implements POIFSReaderListener {
@@ -91,7 +73,7 @@ public class TextExtractor {
 								sb.append(s);
 							}
 						} catch (Exception e) {
-							log.error("", e);
+							log.log(Level.WARNING, "Exception occured.", e);
 						}
 					}
 				}
@@ -102,7 +84,14 @@ public class TextExtractor {
 		}
 	}
 
-	public String xls2text(InputStream is) throws Exception {
+    public String xls2text(InputStream is) throws IOException {
+    	ExcelExtractor wd = new ExcelExtractor(new HSSFWorkbook(is));
+        String text = wd.getText();
+        wd.close();
+        return text;
+    }
+    
+	public String xlsx2text(InputStream is) throws Exception {
 		XSSFWorkbook wb = new XSSFWorkbook(is);
 		XSSFExcelExtractor we = new XSSFExcelExtractor(wb); 
 		String text = we.getText();
@@ -110,7 +99,14 @@ public class TextExtractor {
 		return text;
 	}
 
-	public String doc2text(InputStream is) throws IOException {
+    public String doc2text(InputStream is) throws IOException {
+        WordExtractor wd = new WordExtractor(is);
+        String text = wd.getText();
+        wd.close();
+        return text;
+    }
+    
+	public String docx2text(InputStream is) throws IOException {
 		XWPFDocument doc = new XWPFDocument(is);
 		XWPFWordExtractor we = new XWPFWordExtractor(doc); 
 		String text = we.getText();
@@ -124,19 +120,22 @@ public class TextExtractor {
 		return styledDoc.getText(0, styledDoc.getLength());
 	}
 
-	public String parse(String fileName, InputStream is) {
+	public String parse(Type type, InputStream is) {
 		String result = "";
-		String f = fileName.toLowerCase();
-		
+
 		try {
-			if (f.endsWith(".pdf")) {
+			if (type.equals(Type.PDF)) {
 				result = pdftotext(is);
-			} else if (f.endsWith(".doc") || f.endsWith(".docx")) {
+			} else if (type.equals(Type.DOC)) {
 				result = doc2text(is);
-			} else if (f.endsWith(".rtf")) {
+			} else if (type.equals(Type.DOCX)) {
+				result = docx2text(is);
+			} else if (type.equals(Type.RTF)) {
 				result = rtf2text(is);
-			} else if (f.endsWith(".xls") || f.endsWith(".xlsx")) {
+			} else if (type.equals(Type.XLS)) {
 				result = xls2text(is);
+			} else if (type.equals(Type.XLSX)) {
+				result = xlsx2text(is);
 			} 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -144,4 +143,30 @@ public class TextExtractor {
 
 		return result;
 	}
+
+	public String parse(String fileName, InputStream is) {
+		String result = "";
+		String f = fileName.toLowerCase();
+
+		try {
+			if (f.endsWith(".pdf") || f.equals("application/pdf")) {
+				result = parse(Type.PDF, is);
+			} else if (f.endsWith(".doc") || f.equals("application/msword")) {
+				result = parse(Type.DOC, is);
+			} else if (f.endsWith(".docx") || f.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+				result = parse(Type.DOCX, is);
+			} else if (f.endsWith(".rtf") || f.equals("application/rtf")) {
+				result = parse(Type.RTF, is);
+			} else if (f.endsWith(".xls") || f.equals("application/vnd.ms-excel")) {
+				result = parse(Type.XLS, is);
+			} else if (f.endsWith(".xlsx") || f.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")) {
+				result = parse(Type.XLSX, is);
+			} 
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		return result;
+	}
+
 }
