@@ -79,4 +79,4 @@ local.properties
 
 # IntelliJ IDEA
 .idea/
-/target/
+/text-extractor.iml
