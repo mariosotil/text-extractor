@@ -11,5 +11,5 @@ publish:
         secret_key: $$AWS_SECRET
         source: /drone/src/github.com/mariosotil/text-extractor/target/lib/
         target: /
-        recursive: false
+        recursive: true
 
