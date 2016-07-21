@@ -24,61 +24,11 @@ import java.util.logging.Logger;
  *
  * @author mario.sotil@gmail.com
  */
+@SuppressWarnings("unused")
 public class TextExtractor {
     private static Logger log = Logger.getLogger(TextExtractor.class.getName());
 
     public enum Type {PDF, XLSX, XLS, DOC, DOCX, RTF}
-
-    public String pdf2text(InputStream is) {
-        StringBuilder parsedText = new StringBuilder(1024);
-
-        try {
-            Document pdf = PDF.open(is, "");
-            pdf.pipe(new OutputTarget(parsedText));
-            pdf.close();
-        } catch (Exception e) {
-            log.log(Level.WARNING, "An exception has occurred while parsing the PDF Document.", e);
-        }
-
-        log.info("Done");
-        return parsedText.toString();
-    }
-
-    public String xls2text(InputStream is) throws IOException {
-        ExcelExtractor wd = new ExcelExtractor(new HSSFWorkbook(is));
-        String text = wd.getText();
-        wd.close();
-        return text;
-    }
-
-    public String xlsx2text(InputStream is) throws Exception {
-        XSSFWorkbook wb = new XSSFWorkbook(is);
-        XSSFExcelExtractor we = new XSSFExcelExtractor(wb);
-        String text = we.getText();
-        we.close();
-        return text;
-    }
-
-    public String doc2text(InputStream is) throws IOException {
-        WordExtractor wd = new WordExtractor(is);
-        String text = wd.getText();
-        wd.close();
-        return text;
-    }
-
-    public String docx2text(InputStream is) throws IOException {
-        XWPFDocument doc = new XWPFDocument(is);
-        XWPFWordExtractor we = new XWPFWordExtractor(doc);
-        String text = we.getText();
-        we.close();
-        return text;
-    }
-
-    public String rtf2text(InputStream is) throws Exception {
-        DefaultStyledDocument styledDoc = new DefaultStyledDocument();
-        new RTFEditorKit().read(is, styledDoc, 0);
-        return styledDoc.getText(0, styledDoc.getLength());
-    }
 
     public String parse(String reference, InputStream is) {
         return parse(referenceToType(reference), is);
@@ -132,4 +82,54 @@ public class TextExtractor {
         return result;
     }
 
+    public String pdf2text(InputStream is) {
+        StringBuilder parsedText = new StringBuilder(1024);
+
+        try {
+            Document pdf = PDF.open(is, "");
+            pdf.pipe(new OutputTarget(parsedText));
+            pdf.close();
+        } catch (Exception e) {
+            log.log(Level.WARNING, "An exception has occurred while parsing the PDF Document.", e);
+        }
+
+        log.info("Done");
+        return parsedText.toString();
+    }
+
+    public String xls2text(InputStream is) throws IOException {
+        ExcelExtractor wd = new ExcelExtractor(new HSSFWorkbook(is));
+        String text = wd.getText();
+        wd.close();
+        return text;
+    }
+
+    public String xlsx2text(InputStream is) throws Exception {
+        XSSFWorkbook wb = new XSSFWorkbook(is);
+        XSSFExcelExtractor we = new XSSFExcelExtractor(wb);
+        String text = we.getText();
+        we.close();
+        return text;
+    }
+
+    public String doc2text(InputStream is) throws IOException {
+        WordExtractor wd = new WordExtractor(is);
+        String text = wd.getText();
+        wd.close();
+        return text;
+    }
+
+    public String docx2text(InputStream is) throws IOException {
+        XWPFDocument doc = new XWPFDocument(is);
+        XWPFWordExtractor we = new XWPFWordExtractor(doc);
+        String text = we.getText();
+        we.close();
+        return text;
+    }
+
+    public String rtf2text(InputStream is) throws Exception {
+        DefaultStyledDocument styledDoc = new DefaultStyledDocument();
+        new RTFEditorKit().read(is, styledDoc, 0);
+        return styledDoc.getText(0, styledDoc.getLength());
+    }
 }
