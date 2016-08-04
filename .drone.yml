@@ -6,7 +6,7 @@ publish:
     s3:
         acl: private
         region: "us-east-1"
-        bucket: "text-extractor"
+        bucket: "text-extractor-2"
         access_key: $$AWS_KEY
         secret_key: $$AWS_SECRET
         source: /drone/src/github.com/mariosotil/text-extractor/target/lib/
