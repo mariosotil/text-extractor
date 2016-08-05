@@ -24,6 +24,7 @@ import java.util.logging.Logger;
  *
  * @author mario.sotil@gmail.com
  */
+
 @SuppressWarnings("unused")
 public class TextExtractor {
     private static Logger log = Logger.getLogger(TextExtractor.class.getName());
