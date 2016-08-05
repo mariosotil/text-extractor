@@ -13,4 +13,3 @@ publish:
         source: /drone/src/github.com/mariosotil/text-extractor/target/lib/
         target: /
         recursive: true
-
