@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * Extracts text only from Word, Excel, RTF and PDF files. It's based on the code
  * published on <a href="https://codezrule.wordpress.com/2010/03/24/extract-text-from-pdf-office-files-doc-ppt-xls-open-office-files-rtf-and-textplain-files-in-java/">Extract Text From pdf, office files(.doc, .ppt, .xls), open office files, .rtf, and text/plain files in Java</a>
  *
- * @author mario.sotil@gmail.com
+ * @author mario.sotil at gmail.com
  */
 
 @SuppressWarnings("unused")
